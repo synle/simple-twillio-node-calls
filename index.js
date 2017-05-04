@@ -29,10 +29,8 @@ app.get('/', function(req, res) {
     res.send('OK: ');
 });
 
-
+var clientName = 'support_agent';
 app.post('/generate', function (req, res) {
-  var clientName = "support_agent";
-
   var capability = new ClientCapability({
       accountSid: config.accountSid,
       authToken: config.authToken
@@ -63,6 +61,7 @@ app.post('/voice', twilio.webhook({validate: false}), function(req, res, next) {
     console.log('req.body', req.body);
   var phoneNumber = req.body.phoneNumber;
   var callerId = config.twilioNumber;
+
   // var twiml = new VoiceResponse();
 
   // var dial = twiml.dial({callerId : callerId});
@@ -72,16 +71,34 @@ app.post('/voice', twilio.webhook({validate: false}), function(req, res, next) {
 
   // res.send(twiml.toString());
 
-    res.set('Content-Type', 'text/xml');
-    res.send([
-        '<?xml version="1.0" encoding="UTF-8"?>',
-        '<Response>',
-        '<Say> Please wait while we connect you to the Lead</Say>',
-        '<Dial callerId="' + callerId + '" record="record-from-start">',
-        '    <Number>' + phoneNumber + '</Number>',
-        '</Dial>',
-        '</Response>',
-    ].join('\n'));
+
+    if (phoneNumber != null) {
+        // route calls out
+        res.set('Content-Type', 'text/xml');
+        res.send([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Say> Please wait while we connect you to the Lead</Say>',
+            '<Dial callerId="' + callerId + '">',
+            '    <Number>' + phoneNumber + '</Number>',
+            '</Dial>',
+            '</Response>',
+        ].join('\n'));
+    } else {
+        // incoming calls
+        res.set('Content-Type', 'text/xml');
+        res.send([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Say> Please wait while we connect you to the Lead</Say>',
+            '<Dial>',
+            '    <Client>' + clientName + '</Client>',
+            '</Dial>',
+            '</Response>',
+        ].join('\n'));
+
+        clientName
+    }
 });
 
 

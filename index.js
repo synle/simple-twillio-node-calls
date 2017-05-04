@@ -7,7 +7,7 @@ var config = require('./config');
 console.log(config.accountSid, config.authToken);
 
 // Create a Twilio REST API client for authenticated requests to Twilio
-// var client = twilio(config.accountSid, config.authToken);
+var client = twilio(config.accountSid, config.authToken);
 
 // start
 var app = express();

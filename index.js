@@ -3,6 +3,8 @@ var express = require('express');
 var morgan = require('morgan');
 var bodyParser = require('body-parser');
 var ClientCapability = require('twilio').jwt.ClientCapability;
+var VoiceResponse = twilio.twiml.VoiceResponse;
+
 
 // internal
 var config = require('./config');
@@ -45,7 +47,7 @@ app.post('/generate', function (req, res) {
   res.json({ token: token });
 });
 
-app.post('/voice', function(req, res){
+app.get('/voice', function(req, res){
     res.set('Content-Type', 'text/xml');
     res.send([
         '<?xml version="1.0" encoding="UTF-8" ?>',
@@ -55,6 +57,21 @@ app.post('/voice', function(req, res){
         '</Response>',
     ].join('\n'));
 });
+
+app.post('/voice', twilio.webhook({validate: false}), function(req, res, next) {
+    console.log('req.body', req.body);
+  var phoneNumber = req.body.phoneNumber;
+  var callerId = config.twilioNumber;
+  var twiml = new VoiceResponse();
+
+  var dial = twiml.dial({callerId : callerId});
+  if (phoneNumber != null) {
+    dial.number(phoneNumber);
+  }
+
+  res.send(twiml.toString());
+});
+
 
 
 // // Handle an AJAX POST req to place an outbound call

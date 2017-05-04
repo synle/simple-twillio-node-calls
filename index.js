@@ -1,3 +1,4 @@
+// https://www.twilio.com/docs/tutorials/browser-calls-node-express#generate-a-capability-token
 var twilio = require('twilio');
 var express = require('express');
 var morgan = require('morgan');
@@ -62,14 +63,25 @@ app.post('/voice', twilio.webhook({validate: false}), function(req, res, next) {
     console.log('req.body', req.body);
   var phoneNumber = req.body.phoneNumber;
   var callerId = config.twilioNumber;
-  var twiml = new VoiceResponse();
+  // var twiml = new VoiceResponse();
 
-  var dial = twiml.dial({callerId : callerId});
-  if (phoneNumber != null) {
-    dial.number(phoneNumber);
-  }
+  // var dial = twiml.dial({callerId : callerId});
+  // if (phoneNumber != null) {
+  //   dial.number(phoneNumber);
+  // }
 
-  res.send(twiml.toString());
+  // res.send(twiml.toString());
+
+    res.set('Content-Type', 'text/xml');
+    res.send([
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<Response>',
+        '<Say> Please wait while we connect you to the Lead</Say>',
+        '<Dial callerId="' + callerId + '">',
+        '    <Number>' + phoneNumber + '</Number>',
+        '</Dial>',
+        '</Response>',
+    ].join('\n'));
 });
 
 

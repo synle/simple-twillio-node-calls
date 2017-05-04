@@ -73,31 +73,32 @@ app.post('/voice', twilio.webhook({validate: false}), function(req, res, next) {
 
 
     if (phoneNumber != null) {
+        console.log('connect to customer', phoneNumber);
+
         // route calls out
         res.set('Content-Type', 'text/xml');
         res.send([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
-            '<Say> Please wait while we connect you to the Lead</Say>',
+            '<Say> Please wait while we connect you to the Lead at ' + phoneNumber + '</Say>',
             '<Dial callerId="' + callerId + '">',
             '    <Number>' + phoneNumber + '</Number>',
             '</Dial>',
             '</Response>',
         ].join('\n'));
     } else {
+        console.log('routing call to agent', clientName);
+
         // incoming calls
         res.set('Content-Type', 'text/xml');
         res.send([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
-            '<Say> Please wait while we connect you to the Lead</Say>',
             '<Dial>',
             '    <Client>' + clientName + '</Client>',
             '</Dial>',
             '</Response>',
         ].join('\n'));
-
-        clientName
     }
 });
 

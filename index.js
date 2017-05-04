@@ -58,18 +58,19 @@ app.get('/voice', function(req, res){
 });
 
 app.post('/voice', twilio.webhook({validate: false}), function(req, res, next) {
-    console.log('req.body', req.body);
-  var phoneNumber = req.body.phoneNumber;
-  var callerId = config.twilioNumber;
+    var phoneNumber = req.body.phoneNumber;
+    var callerId = config.twilioNumber;
 
-  // var twiml = new VoiceResponse();
+    // console.log('req.body', req.body);
 
-  // var dial = twiml.dial({callerId : callerId});
-  // if (phoneNumber != null) {
-  //   dial.number(phoneNumber);
-  // }
+    // var twiml = new VoiceResponse();
 
-  // res.send(twiml.toString());
+    // var dial = twiml.dial({callerId : callerId});
+    // if (phoneNumber != null) {
+    //   dial.number(phoneNumber);
+    // }
+
+    // res.send(twiml.toString());
 
 
     if (phoneNumber != null) {
@@ -80,32 +81,27 @@ app.post('/voice', twilio.webhook({validate: false}), function(req, res, next) {
         res.send([
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<Response>',
-            '<Say> Please wait while we connect you to the Lead at ' + phoneNumber + '</Say>',
+            '<Say> Please wait while we connect you to the Customer</Say>',
             '<Dial callerId="' + callerId + '">',
             '    <Number>' + phoneNumber + '</Number>',
             '</Dial>',
             '</Response>',
         ].join('\n'));
+    } else {
+        console.log('connect to customer', clientName);
+
+        // incoming calls
+        res.set('Content-Type', 'text/xml');
+        res.send([
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<Response>',
+            '<Say> Please wait while we connect you to an agent</Say>',
+            '<Dial>',
+            '    <Client>' + clientName + '</Client>',
+            '</Dial>',
+            '</Response>',
+        ].join('\n'));
     }
-});
-
-
-
-app.post('/agent', twilio.webhook({validate: false}), function(req, res, next) {
-    console.log('req.body', req.body);
-    var phoneNumber = req.body.phoneNumber;
-    console.log('routing call to agent', clientName);
-
-    // incoming calls
-    res.set('Content-Type', 'text/xml');
-    res.send([
-        '<?xml version="1.0" encoding="UTF-8"?>',
-        '<Response>',
-        '<Dial callerId="' + callerId + '">',
-        '    <Client>' + clientName + '</Client>',
-        '</Dial>',
-        '</Response>',
-    ].join('\n'));
 });
 
 

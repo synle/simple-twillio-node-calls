@@ -77,7 +77,7 @@ app.post('/voice', twilio.webhook({validate: false}), function(req, res, next) {
         '<?xml version="1.0" encoding="UTF-8"?>',
         '<Response>',
         '<Say> Please wait while we connect you to the Lead</Say>',
-        '<Dial callerId="' + callerId + '">',
+        '<Dial callerId="' + callerId + '" record="record-from-start">',
         '    <Number>' + phoneNumber + '</Number>',
         '</Dial>',
         '</Response>',

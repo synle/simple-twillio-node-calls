@@ -86,20 +86,26 @@ app.post('/voice', twilio.webhook({validate: false}), function(req, res, next) {
             '</Dial>',
             '</Response>',
         ].join('\n'));
-    } else {
-        console.log('routing call to agent', clientName);
-
-        // incoming calls
-        res.set('Content-Type', 'text/xml');
-        res.send([
-            '<?xml version="1.0" encoding="UTF-8"?>',
-            '<Response>',
-            '<Dial>',
-            '    <Client>' + clientName + '</Client>',
-            '</Dial>',
-            '</Response>',
-        ].join('\n'));
     }
+});
+
+
+
+app.post('/agent', twilio.webhook({validate: false}), function(req, res, next) {
+    console.log('req.body', req.body);
+    var phoneNumber = req.body.phoneNumber;
+    console.log('routing call to agent', clientName);
+
+    // incoming calls
+    res.set('Content-Type', 'text/xml');
+    res.send([
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<Response>',
+        '<Dial callerId="' + callerId + '">',
+        '    <Client>' + clientName + '</Client>',
+        '</Dial>',
+        '</Response>',
+    ].join('\n'));
 });
 
 
